@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bot, Loader2, Sparkles } from "lucide-react";
 import { summarizePatientTimeline } from "../../services/api";
 import { usePatientStore } from "../../store/patient-store";
@@ -8,16 +8,25 @@ import { Button } from "@/components/ui/button";
 
 export function AiSummaryPanel() {
   const { activePatient, allergies } = usePatientStore();
-  const { entries, fetchedAt } = useTimelineStore();
+  const { entries, fetchedAt, isLoading: isTimelineLoading } = useTimelineStore();
   const [summary, setSummary] = useState<SummaryResponse>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>();
+  const summaryRequestId = useRef(0);
+
+  useEffect(() => {
+    summaryRequestId.current += 1;
+    setSummary(undefined);
+    setError(undefined);
+    setIsLoading(false);
+  }, [activePatient?.id, fetchedAt]);
 
   async function generateSummary() {
-    if (!activePatient) {
+    if (!activePatient || isTimelineLoading || entries.length === 0) {
       return;
     }
 
+    const requestId = ++summaryRequestId.current;
     setIsLoading(true);
     setError(undefined);
 
@@ -28,12 +37,17 @@ export function AiSummaryPanel() {
         entries,
         fetchedAt: fetchedAt ?? new Date().toISOString()
       });
-      console.log("Summary response:", response);
-      setSummary(response);
+      if (requestId === summaryRequestId.current) {
+        setSummary(response);
+      }
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to generate summary.");
+      if (requestId === summaryRequestId.current) {
+        setError(requestError instanceof Error ? requestError.message : "Unable to generate summary.");
+      }
     } finally {
-      setIsLoading(false);
+      if (requestId === summaryRequestId.current) {
+        setIsLoading(false);
+      }
     }
   }
 
@@ -46,7 +60,7 @@ export function AiSummaryPanel() {
         </div>
         <Button
           onClick={() => void generateSummary()}
-          disabled={!activePatient || !entries.length || isLoading}
+          disabled={!activePatient || !entries.length || isLoading || isTimelineLoading}
           title="Generate patient summary"
         >
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}

@@ -12,25 +12,37 @@ interface TimelineState {
   clearTimeline: () => void;
 }
 
+let timelineRequestId = 0;
+
 export const useTimelineStore = create<TimelineState>((set) => ({
   entries: [],
   isLoading: false,
   loadPatientTimeline: async (patientId) => {
-    set({ isLoading: true, error: undefined });
+    const requestId = ++timelineRequestId;
+    set({ entries: [], fetchedAt: undefined, isLoading: true, error: undefined });
     try {
       const timeline = await getPatientTimeline(patientId);
-      usePatientStore.getState().setPatientContext(timeline.patient, timeline.allergies);
-      set({
-        entries: timeline.entries,
-        fetchedAt: timeline.fetchedAt,
-        isLoading: false
-      });
+      if (requestId === timelineRequestId) {
+        usePatientStore.getState().setPatientContext(timeline.patient, timeline.allergies);
+        set({
+          entries: timeline.entries,
+          fetchedAt: timeline.fetchedAt,
+          isLoading: false
+        });
+      }
     } catch (error) {
-      set({
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Unable to load timeline."
-      });
+      if (requestId === timelineRequestId) {
+        set({
+          entries: [],
+          fetchedAt: undefined,
+          isLoading: false,
+          error: error instanceof Error ? error.message : "Unable to load timeline."
+        });
+      }
     }
   },
-  clearTimeline: () => set({ entries: [], fetchedAt: undefined, error: undefined })
+  clearTimeline: () => {
+    timelineRequestId += 1;
+    set({ entries: [], fetchedAt: undefined, isLoading: false, error: undefined });
+  }
 }));

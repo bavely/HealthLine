@@ -15,4 +15,18 @@ describe("aiSummarizer", () => {
     expect(response.glossary).toHaveLength(1);
     expect(response.disclaimer).toBe(AI_SUMMARY_DISCLAIMER);
   });
+
+  it("parses fenced JSON when the model includes markdown formatting", () => {
+    const response = parseSummary(`\`\`\`json
+{
+  "summary": "The patient has sparse timeline data.",
+  "glossary": [],
+  "disclaimer": "${AI_SUMMARY_DISCLAIMER}"
+}
+\`\`\``);
+
+    expect(response.summary).toBe("The patient has sparse timeline data.");
+    expect(response.glossary).toEqual([]);
+    expect(response.disclaimer).toBe(AI_SUMMARY_DISCLAIMER);
+  });
 });

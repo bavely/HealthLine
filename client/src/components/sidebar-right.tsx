@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bot, Info, Loader2, Sparkles, X } from "lucide-react";
 import { summarizePatientTimeline } from "../services/api";
 import { usePatientStore } from "../store/patient-store";
@@ -33,14 +33,23 @@ export function SidebarRight({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const { activePatient, allergies } = usePatientStore();
-  const { entries, fetchedAt } = useTimelineStore();
+  const { entries, fetchedAt, isLoading: isTimelineLoading } = useTimelineStore();
   const [summary, setSummary] = useState<SummaryResponse>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>();
+  const summaryRequestId = useRef(0);
+
+  useEffect(() => {
+    summaryRequestId.current += 1;
+    setSummary(undefined);
+    setError(undefined);
+    setIsLoading(false);
+  }, [activePatient?.id, fetchedAt]);
 
   async function generateSummary() {
-    if (!activePatient) return;
+    if (!activePatient || isTimelineLoading || entries.length === 0) return;
 
+    const requestId = ++summaryRequestId.current;
     setIsLoading(true);
     setError(undefined);
 
@@ -51,15 +60,21 @@ export function SidebarRight({
         entries,
         fetchedAt: fetchedAt ?? new Date().toISOString(),
       });
-      setSummary(response);
+      if (requestId === summaryRequestId.current) {
+        setSummary(response);
+      }
     } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Unable to generate summary."
-      );
+      if (requestId === summaryRequestId.current) {
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : "Unable to generate summary."
+        );
+      }
     } finally {
-      setIsLoading(false);
+      if (requestId === summaryRequestId.current) {
+        setIsLoading(false);
+      }
     }
   }
 
@@ -73,7 +88,7 @@ export function SidebarRight({
       );
     }
 
-    if (isLoading) {
+    if (isLoading || isTimelineLoading) {
       return <SummarySkeleton />;
     }
 
@@ -148,7 +163,7 @@ export function SidebarRight({
         <Button
           className="mt-2 w-full"
           onClick={() => void generateSummary()}
-          disabled={!activePatient || !entries.length || isLoading}
+          disabled={!activePatient || !entries.length || isLoading || isTimelineLoading}
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />

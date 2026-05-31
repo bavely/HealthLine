@@ -25,20 +25,14 @@ export async function summarizeTimeline(timeline: TimelineResponse): Promise<Sum
     throw error;
   }
 
-  if (!baseURL) {
-    const error = new Error("OPENAI_ENDPOINT is required for summaries.");
-    (error as Error & { status?: number }).status = 503;
-    throw error;
-  }
-
-  const client = new OpenAI({ 
-      baseURL,
-     apiKey
-   });
+  const client = new OpenAI({
+    apiKey,
+    ...(baseURL ? { baseURL } : {})
+  });
   const completion = await client.chat.completions.create({
-    model: process.env.OPENAI_MODEL ?? "gpt-5.4",
-   store: true,
-    messages: buildPatientSummaryMessages(timeline)
+    model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+    messages: buildPatientSummaryMessages(timeline),
+    response_format: { type: "json_object" }
   });
 
   return parseSummary(completion.choices[0]?.message?.content ?? "");
@@ -46,22 +40,39 @@ export async function summarizeTimeline(timeline: TimelineResponse): Promise<Sum
 
 export function parseSummary(content: string): SummaryResponse {
   try {
-    console.log("Parsing summary content:", typeof content);
-     const jsonContent = JSON.parse(content);
-    console.log("Parsed JSON content:", typeof jsonContent, jsonContent);
+    const jsonContent = JSON.parse(extractJsonObject(content));
     const parsed = summarySchema.parse(jsonContent);
-    
+
     return {
       summary: parsed.summary,
       glossary: parsed.glossary,
       disclaimer: parsed.disclaimer || AI_SUMMARY_DISCLAIMER
     };
-  } catch (parseError) {
-    console.error("Error parsing summary content:", parseError);
+  } catch {
     return {
       summary: content || "No summary was returned.",
       glossary: [],
       disclaimer: AI_SUMMARY_DISCLAIMER
     };
   }
+}
+
+function extractJsonObject(content: string): string {
+  const trimmed = content.trim();
+  if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+    return trimmed;
+  }
+
+  const fencedJson = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i)?.[1]?.trim();
+  if (fencedJson) {
+    return fencedJson;
+  }
+
+  const start = trimmed.indexOf("{");
+  const end = trimmed.lastIndexOf("}");
+  if (start >= 0 && end > start) {
+    return trimmed.slice(start, end + 1);
+  }
+
+  return trimmed;
 }
