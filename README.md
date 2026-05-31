@@ -42,6 +42,3 @@ npm run lint
 - `GET /api/patients/:id/timeline`
 - `POST /api/patients/:id/summary`
 
-## Notes
-
-This starter intentionally keeps UI primitives local instead of installing shadcn/ui-generated files up front. The folder layout mirrors the architecture document so generated shadcn components, SMART on FHIR auth, export flows, and richer detail panels can be added without reshaping the codebase.
