@@ -4,7 +4,7 @@ import { summarizePatientTimeline } from "../../services/api";
 import { usePatientStore } from "../../store/patient-store";
 import { useTimelineStore } from "../../store/timeline-store";
 import type { SummaryResponse } from "../../types/timeline";
-import { Button } from "../ui/Button";
+import { Button } from "@/components/ui/button";
 
 export function AiSummaryPanel() {
   const { activePatient, allergies } = usePatientStore();

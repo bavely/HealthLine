@@ -1,11 +1,15 @@
 interface DateMarkerProps {
-  label: string;
+  readonly label: string;
 }
 
 export function DateMarker({ label }: DateMarkerProps) {
   return (
-    <div className="sticky top-0 z-10 border-b border-line bg-paper/95 px-1 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-600 backdrop-blur">
-      {label}
+    <div className="sticky top-0 z-10 flex items-center gap-3 bg-background/95 py-3 backdrop-blur">
+      <div className="h-px flex-1 bg-border" />
+      <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </span>
+      <div className="h-px flex-1 bg-border" />
     </div>
   );
 }
