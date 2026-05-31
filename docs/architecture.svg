@@ -1,0 +1,61 @@
+<svg width="100%" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: transparent;">
+<style>
+  .th { font-size: 14px; font-weight: 500; fill: #2c2c2a; }
+  .ts { font-size: 12px; font-weight: 400; fill: #5f5e5a; }
+  .arr { stroke: #888780; stroke-width: 1.5; }
+  .teal-box { fill: #E1F5EE; stroke: #0F6E56; stroke-width: 0.5; }
+  .teal-t { fill: #085041; } .teal-s { fill: #0F6E56; }
+  .purple-box { fill: #EEEDFE; stroke: #534AB7; stroke-width: 0.5; }
+  .purple-t { fill: #3C3489; } .purple-s { fill: #534AB7; }
+  .gray-box { fill: #F1EFE8; stroke: #5F5E5A; stroke-width: 0.5; }
+  .gray-t { fill: #444441; } .gray-s { fill: #5F5E5A; }
+  .blue-box { fill: #E6F1FB; stroke: #185FA5; stroke-width: 0.5; }
+  .blue-t { fill: #0C447C; } .blue-s { fill: #185FA5; }
+  .coral-box { fill: #FAECE7; stroke: #993C1D; stroke-width: 0.5; }
+  .coral-t { fill: #712B13; } .coral-s { fill: #993C1D; }
+  @media (prefers-color-scheme: dark) {
+    .th { fill: #d3d1c7; } .ts { fill: #888780; } .arr { stroke: #888780; }
+    .teal-box { fill: #085041; stroke: #5DCAA5; } .teal-t { fill: #9FE1CB; } .teal-s { fill: #5DCAA5; }
+    .purple-box { fill: #3C3489; stroke: #AFA9EC; } .purple-t { fill: #CECBF6; } .purple-s { fill: #AFA9EC; }
+    .gray-box { fill: #444441; stroke: #B4B2A9; } .gray-t { fill: #D3D1C7; } .gray-s { fill: #B4B2A9; }
+    .blue-box { fill: #0C447C; stroke: #85B7EB; } .blue-t { fill: #B5D4F4; } .blue-s { fill: #85B7EB; }
+    .coral-box { fill: #712B13; stroke: #F0997B; } .coral-t { fill: #F5C4B3; } .coral-s { fill: #F0997B; }
+  }
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text class="th" x="340" y="28" text-anchor="middle">System architecture</text>
+<rect class="teal-box" x="40" y="44" width="600" height="120" rx="16"/>
+<text class="teal-t" x="340" y="68" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500">React + TypeScript frontend</text>
+<rect class="gray-box" x="60" y="84" width="170" height="60" rx="8"/>
+<text class="gray-t" x="145" y="106" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500">Patient search</text>
+<text class="gray-s" x="145" y="126" text-anchor="middle" dominant-baseline="central" font-size="12">Browse FHIR patients</text>
+<rect class="gray-box" x="250" y="84" width="170" height="60" rx="8"/>
+<text class="gray-t" x="335" y="106" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500">Timeline view</text>
+<text class="gray-s" x="335" y="126" text-anchor="middle" dominant-baseline="central" font-size="12">Interactive history</text>
+<rect class="gray-box" x="440" y="84" width="180" height="60" rx="8"/>
+<text class="gray-t" x="530" y="106" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500">AI summary panel</text>
+<text class="gray-s" x="530" y="126" text-anchor="middle" dominant-baseline="central" font-size="12">Natural language digest</text>
+<text class="ts" x="340" y="158" text-anchor="middle">Zustand (patient state + timeline data) | shadcn/ui components</text>
+<line x1="220" y1="170" x2="220" y2="208" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="232" y="194" text-anchor="start">REST</text>
+<line x1="460" y1="170" x2="460" y2="208" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="472" y="194" text-anchor="start">REST</text>
+<rect class="purple-box" x="40" y="210" width="600" height="80" rx="16"/>
+<text class="purple-t" x="340" y="234" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500">Node.js / Express proxy server</text>
+<rect class="gray-box" x="60" y="252" width="260" height="30" rx="6"/>
+<text class="gray-s" x="190" y="270" text-anchor="middle" dominant-baseline="central" font-size="12">FHIR resource fetcher + normalizer</text>
+<rect class="gray-box" x="340" y="252" width="280" height="30" rx="6"/>
+<text class="gray-s" x="480" y="270" text-anchor="middle" dominant-baseline="central" font-size="12">AI summarization endpoint (OpenAI)</text>
+<line x1="190" y1="290" x2="190" y2="330" class="arr" marker-end="url(#arrow)"/>
+<line x1="480" y1="290" x2="480" y2="330" class="arr" marker-end="url(#arrow)"/>
+<rect class="blue-box" x="60" y="332" width="260" height="72" rx="8"/>
+<text class="blue-t" x="190" y="356" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500">HAPI FHIR test server</text>
+<text class="blue-s" x="190" y="376" text-anchor="middle" dominant-baseline="central" font-size="12">Public sandbox (R4)</text>
+<text class="blue-s" x="190" y="394" text-anchor="middle" dominant-baseline="central" font-size="12">No auth required</text>
+<rect class="coral-box" x="360" y="332" width="260" height="72" rx="8"/>
+<text class="coral-t" x="490" y="356" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500">OpenAI GPT-4</text>
+<text class="coral-s" x="490" y="376" text-anchor="middle" dominant-baseline="central" font-size="12">Patient history summary</text>
+<text class="coral-s" x="490" y="394" text-anchor="middle" dominant-baseline="central" font-size="12">+ medical term glossary</text>
+<text class="ts" x="340" y="436" text-anchor="middle">FHIR resources: Patient, Condition, MedicationRequest, Observation, Encounter, Procedure</text>
+<text class="ts" x="340" y="456" text-anchor="middle">Jest + React Testing Library | GitHub Actions CI/CD</text>
+</svg>
